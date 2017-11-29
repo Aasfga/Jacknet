@@ -1,4 +1,4 @@
-from jacknet.devices import *
+from jacknet.devices.abstract_device import AbstractDevice
 
 
 class BufferDevice(AbstractDevice):

@@ -2,7 +2,7 @@
 
 import ctypes
 
-import jacknet.devices.pulseaudio.defs as defs
+import jacknet.pulseaudio.defs as defs
 
 
 ###

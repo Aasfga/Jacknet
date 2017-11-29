@@ -4,10 +4,10 @@ import ctypes
 import os
 import wave
 
+import jacknet.pulseaudio.defs as defs
 import numpy as np
-import jacknet.devices.pulseaudio.types as types
 
-import jacknet.devices.pulseaudio.defs as defs
+import jacknet.pulseaudio.types as types
 
 #TODO: safeguard 
 library = ctypes.cdll.LoadLibrary('libpulse-simple.so.0')

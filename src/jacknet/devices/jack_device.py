@@ -1,11 +1,11 @@
-from jacknet.devices import AbstractDevice
+from jacknet.devices.abstract_device import AbstractDevice
 import numpy as np
 from numpy.fft import fft
 from jacknet.tools import *
 
 
 class JackDevice(AbstractDevice):
-    framerate = 44100
+    framerate = 1 * 44100
     ZERO = 440
     ONE = 880
 
@@ -66,22 +66,36 @@ class JackDevice(AbstractDevice):
             data.append(self._read_signal())
         return data
 
+    @staticmethod
+    def get_max(fft_list, x):
+        pointer = x
+        for i in range(x-2, x+2):
+            if np.abs(fft_list[pointer]) < np.abs(fft_list[i]):
+                pointer = i
+        return pointer
+
     def _is_synchronized(self):
         signal = self._read(int(self.framerate * self.time))
         fft_list = fft(signal)[:1000]
+        print(np.argmax(np.abs(fft_list)))
         fft_list[0] = 0
-        one, zero = np.abs(fft_list[self.one()]), np.abs(fft_list[self.zero()])
-        fft_list[self.one()] = 0
-        fft_list[self.zero()] = 0
-        zero_list = [x for x in fft_list if abs(x) > 0.3 * zero]
-        one_list = [x for x in fft_list if abs(x) > 0.3 * one]
+        zero_p = self.get_max(fft_list, self.zero())
+        one_p = self.get_max(fft_list, self.one())
+        zero = np.abs(fft_list[zero_p])
+        one = np.abs(fft_list[one_p])
+        fft_list[one_p] = 0
+        fft_list[zero_p] = 0
+        zero_list = [np.abs(x) for x in fft_list if abs(x) > 0.6 * zero]
+        one_list = [np.abs(x) for x in fft_list if abs(x) > 0.6 * one]
         return len(zero_list) == 0 or len(one_list) == 0
 
     def _move_cursor(self):
-        self._read(int(self.framerate * self.time * 0.1))
+        print("move")
+        self._read(int(self.framerate * self.time * 0.7))
 
     def _is_preamble(self):
         byte = self._read_data(8)
+        print(byte)
         i = byte[0]
 
         for x in byte:
@@ -103,11 +117,11 @@ class JackDevice(AbstractDevice):
             while not self._is_synchronized():
                 self._move_cursor()
             try:
+                print("preamble")
                 if self._is_preamble():
                     break
             except ValueError:
                 continue
-
         self._read_preamble()
         first, second = list_to_string(self._read_data(6 * 8)), list_to_string(self._read_data(6 * 8))
         length = list_to_string(self._read_data(4 * 8))

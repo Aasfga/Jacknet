@@ -1,4 +1,4 @@
-from jacknet.devices import JackDevice
+from jacknet.devices.jack_device import JackDevice
 import random
 
 class BufferedJack(JackDevice):
