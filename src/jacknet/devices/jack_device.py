@@ -77,7 +77,6 @@ class JackDevice(AbstractDevice):
     def _is_synchronized(self):
         signal = self._read(int(self.framerate * self.time))
         fft_list = fft(signal)[:1000]
-        print(np.argmax(np.abs(fft_list)))
         fft_list[0] = 0
         zero_p = self.get_max(fft_list, self.zero())
         one_p = self.get_max(fft_list, self.one())
@@ -85,17 +84,15 @@ class JackDevice(AbstractDevice):
         one = np.abs(fft_list[one_p])
         fft_list[one_p] = 0
         fft_list[zero_p] = 0
-        zero_list = [np.abs(x) for x in fft_list if abs(x) > 0.6 * zero]
-        one_list = [np.abs(x) for x in fft_list if abs(x) > 0.6 * one]
+        zero_list = [np.abs(x) for x in fft_list if abs(x) > 0.3 * zero]
+        one_list = [np.abs(x) for x in fft_list if abs(x) > 0.3 * one]
         return len(zero_list) == 0 or len(one_list) == 0
 
     def _move_cursor(self):
-        print("move")
-        self._read(int(self.framerate * self.time * 0.7))
+        self._read(int(self.framerate * self.time * 0.07))
 
     def _is_preamble(self):
         byte = self._read_data(8)
-        print(byte)
         i = byte[0]
 
         for x in byte:
@@ -117,7 +114,6 @@ class JackDevice(AbstractDevice):
             while not self._is_synchronized():
                 self._move_cursor()
             try:
-                print("preamble")
                 if self._is_preamble():
                     break
             except ValueError:
