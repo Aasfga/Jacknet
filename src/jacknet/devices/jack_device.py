@@ -47,7 +47,8 @@ class JackDevice(AbstractDevice):
         raise NotImplementedError
 
     def _convert_signal(self, signal):
-        fft_list = fft(signal)[:1000]
+        fft_list = fft(signal)
+        fft_list = fft_list[:len(fft_list)//2]
         x = np.abs(np.argmax(np.abs(fft_list)))
         if abs(x - self.zero()) < 5:
             return 0
@@ -89,7 +90,7 @@ class JackDevice(AbstractDevice):
         return len(zero_list) == 0 or len(one_list) == 0
 
     def _move_cursor(self):
-        self._read(int(self.framerate * self.time * 0.07))
+        self._read(int(self.framerate * self.time * 0.05))
 
     def _is_preamble(self):
         byte = self._read_data(8)
@@ -134,8 +135,10 @@ class JackDevice(AbstractDevice):
         one = self.create_signal(self.ONE, self.time)
         zero = self.create_signal(self.ZERO, self.time)
         data = self._preamble() + self.conv4b5b(data)
+        res = []
         for x in data:
             if x == "0":
-                self._write(zero)
+                res += self.create_signal(self.ZERO, self.time)
             else:
-                self._write(one)
+                res += self.create_signal(self.ONE, self.time)
+        self._write(res)
