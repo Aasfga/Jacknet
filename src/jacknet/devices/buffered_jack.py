@@ -20,6 +20,9 @@ class BufferedJack(JackDevice):
     def _read(self, bits):
         res = self.buffer[self.iter:self.iter + bits]
         self.iter += bits
+        if self.iter == len(self.buffer):
+            self.iter = 0
+            self.buffer = self._create_noise()
         return res
 
     def _write(self, data):
