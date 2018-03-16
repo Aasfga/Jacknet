@@ -40,3 +40,6 @@ jack = RealJack(0.025)
 jc = JackConnection(jack)
 print(jc.receive_msg())
 ```
+
+# Other libraries
+Jacknet uses library "pulseaudio" created by Grzegorz Gutowski. The library is available under LGPL license
