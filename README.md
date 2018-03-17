@@ -15,7 +15,7 @@ To install **Jacknet** put source code in your project folder. To send data by s
 **Jacknet** is based on ethernet frame. It can send data with amazing speed 32b/s!
 
 # Tests
-**Jacknet** wave creator was tested on satori. Conversion functions were tested by using unittests. Whole app was tested by our most valuable employee.
+**Jacknet** wave creator was tested on satori. Unit tests were used to test conversion functions. Whole app was tested by our most valuable employee.
 
 # Examples
 
